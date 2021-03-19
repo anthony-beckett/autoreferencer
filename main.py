@@ -33,14 +33,16 @@ def get_refs(filepath):
 
 def conv_refs(refs_to_conv):
     for ref in refs_to_conv:
-        spl = ref.split(",")
-        spl2 = spl[0].split()
-        for name in spl2:
-            for i in range(0, len(name), 1):
-                name[i] = name[i][0]
-                i += 1
-    print(refs_to_conv)
-
+        tmp = []
+        a, b = ref.split(",")
+        a = a.split()
+        b = b.replace(" ", ", ")
+        for i in range(0, len(a), 1):
+            tmp.append(a[i][0])
+        tmp.append(a[-1])
+        tmp.append(b)
+        refs_to_conv[refs_to_conv.index(ref)] = " ".join(tmp)
+    return refs_to_conv
 
 def write_refs(refs_to_write):
     f = open("OUTPUT.txt", "w")
