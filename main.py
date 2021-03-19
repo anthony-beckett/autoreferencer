@@ -60,14 +60,15 @@ def write_refs(refs_to_write, num):
     f.close()
 
 
-def main(f, count):
-    it_refs = get_refs(f)
+def main(fl, cnt):
+    it_refs = get_refs(fl)
     bib_refs = conv_refs(it_refs)
-    write_refs(bib_refs, count)
+    write_refs(bib_refs, cnt)
 
 
 if __name__ == "__main__":
     argc = len(sys.argv)
+    count = ""
     if argc > 2:
         sys.exit("Error: too many values")
     elif argc == 1:
@@ -75,11 +76,9 @@ if __name__ == "__main__":
         fcount = len(files)
         if fcount > 1:
             count = 1
-        else:
-            count = ""
         for f in files:
             main(f, count)
             if fcount > 1:
                 count += 1
     else:
-        main(sys.argv[1], "")
+        main(sys.argv[1], count)
