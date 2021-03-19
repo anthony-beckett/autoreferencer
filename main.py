@@ -60,6 +60,12 @@ def write_refs(refs_to_write, num):
     f.close()
 
 
+def main(f, count):
+    it_refs = get_refs(f)
+    bib_refs = conv_refs(it_refs)
+    write_refs(bib_refs, count)
+
+
 if __name__ == "__main__":
     argc = len(sys.argv)
     if argc > 2:
@@ -72,12 +78,8 @@ if __name__ == "__main__":
         else:
             count = ""
         for f in files:
-            it_refs = get_refs(f)
-            bib_refs = conv_refs(it_refs)
-            write_refs(bib_refs, count)
+            main(f, count)
             if fcount > 1:
                 count += 1
     else:
-        it_refs = get_refs(sys.argv[1])
-        bib_refs = conv_refs(it_refs)
-        write_refs(bib_refs, "")
+        main(sys.argv[1], "")
