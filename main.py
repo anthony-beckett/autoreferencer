@@ -16,16 +16,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-import sys
 import docx
+import os
+import sys
 import re
+
+
+def search_folder():
+    docs = [doc for doc in os.listdir() if re.search(".docx$", doc)]
+    if not len(docs):
+        sys.exit("Error: No files found")
+    return docs
 
 
 def get_refs(filepath):
     try:
         doc = docx.Document(filepath)
     except:
-        return 1
+        sys.exit("Error: No file found")
 
     return [p.text for p in doc.paragraphs
             if re.search("^.*, (‘|\"|').*.('|\"|’).*$", p.text)]
@@ -37,28 +45,39 @@ def conv_refs(refs_to_conv):
         a, b = ref.split(",")
         a = a.split()
         b = b.replace(" ", ", ")
-        for i in range(0, len(a), 1):
+        for i in range(0, len(a) - 1, 1):
             tmp.append(a[i][0])
         tmp.append(a[-1])
         tmp.append(b)
         refs_to_conv[refs_to_conv.index(ref)] = " ".join(tmp)
     return refs_to_conv
 
-def write_refs(refs_to_write):
-    f = open("OUTPUT.txt", "w")
+
+def write_refs(refs_to_write, num):
+    f = open("OUTPUT%s.txt" % num, "w")
     for ref in refs_to_write:
         f.write("%s\n" % ref)
     f.close()
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        sys.exit("Error: not enough values")
-
-    it_refs = get_refs(sys.argv[1])
-
-    if it_refs == 1:
-        sys.exit("Error: No file found")
-
-    conv_refs(it_refs)
-    write_refs(it_refs)
+    argc = len(sys.argv)
+    if argc > 2:
+        sys.exit("Error: too many values")
+    elif argc == 1:
+        files = search_folder()
+        fcount = len(files)
+        if fcount > 1:
+            count = 1
+        else:
+            count = ""
+        for f in files:
+            it_refs = get_refs(f)
+            bib_refs = conv_refs(it_refs)
+            write_refs(bib_refs, count)
+            if fcount > 1:
+                count += 1
+    else:
+        it_refs = get_refs(sys.argv[1])
+        bib_refs = conv_refs(it_refs)
+        write_refs(bib_refs, "")
