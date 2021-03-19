@@ -22,22 +22,30 @@ import re
 
 
 def get_refs(filepath):
-    doc = docx.Document(filepath)
+    try:
+        doc = docx.Document(filepath)
+    except:
+        return 1
+
     return [p.text for p in doc.paragraphs
             if re.search("^.*, (‘|\"|').*.('|\"|’).*$", p.text)]
 
 
 def conv_refs(refs_to_conv):
     for ref in refs_to_conv:
-        ref.split()
-    return 0
+        spl = ref.split(",")
+        spl2 = spl[0].split()
+        for name in spl2:
+            for i in range(0, len(name), 1):
+                name[i] = name[i][0]
+                i += 1
+    print(refs_to_conv)
 
 
 def write_refs(refs_to_write):
-    f = open("OUTPUT.txt", "a+")
+    f = open("OUTPUT.txt", "w")
     for ref in refs_to_write:
-        if not re.search('^{0}$'.format(re.escape(ref)), f.read(), flags=re.M):
-            f.write("%s\n" % ref)
+        f.write("%s\n" % ref)
     f.close()
 
 
@@ -46,5 +54,9 @@ if __name__ == "__main__":
         sys.exit("Error: not enough values")
 
     it_refs = get_refs(sys.argv[1])
-    bib_refs = conv_refs(it_refs)
-    # write_refs(bib_refs)
+
+    if it_refs == 1:
+        sys.exit("Error: No file found")
+
+    conv_refs(it_refs)
+    write_refs(it_refs)
